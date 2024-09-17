@@ -1,8 +1,13 @@
 import streamlit as st
+import os
 import datetime
 
 # 페이지 제목과 설명
 st.set_page_config(page_title="민서와 규민's Simple Homepage", layout="wide")
+
+# 이미지 저장 디렉토리 설정
+IMAGE_DIR = "uploaded_images"
+os.makedirs(IMAGE_DIR, exist_ok=True)
 
 # 페이지 상태 초기화
 if 'page' not in st.session_state:
@@ -40,10 +45,14 @@ if st.session_state.page == 'home':
     st.header("Upload a Photo")
     uploaded_file = st.file_uploader("Choose an image", type=["jpg", "jpeg", "png"])
 
-    # 이미지 업로드 시 표시
+    # 이미지 업로드 시 표시 및 저장
     if uploaded_file is not None:
-        st.image(uploaded_file, caption="Uploaded Image", use_column_width=True)
-    
+        file_path = os.path.join(IMAGE_DIR, uploaded_file.name)
+        with open(file_path, "wb") as f:
+            f.write(uploaded_file.getbuffer())
+        st.image(file_path, caption="Uploaded Image", use_column_width=True)
+        st.success(f"Image saved to {file_path}")
+
     # '기념일' 페이지로 이동하는 버튼
     if st.button('Go to Anniversary Page'):
         go_to_page('anniversary')
