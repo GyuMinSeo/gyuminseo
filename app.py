@@ -110,12 +110,11 @@ elif menu == "게시물":
 if st.session_state.page == '게시물':
     # 게시물 목록 표시
     st.header("게시물 목록")
-    
+
     # 게시물 업로드 페이지로 이동하는 버튼
     if st.button("게시물 업로드"):
         st.session_state.page = 'upload_post'  # 페이지 상태 변경
         st.rerun()  # 페이지 새로고침
-
 
     # 게시물 불러오기 및 표시
     posts = load_posts()
@@ -127,7 +126,6 @@ if st.session_state.page == '게시물':
             st.session_state.post_detail = post['title']  # 클릭된 게시물 제목 저장
             st.session_state.page = 'post_detail'  # 페이지 상태 변경
             st.rerun()  # 페이지 새로고침
-
 
 elif st.session_state.page == 'upload_post':
     # 게시물 업로드 페이지
@@ -181,10 +179,12 @@ elif st.session_state.page == 'post_detail':
                 st.session_state.page = '게시물'  # 페이지 상태 변경
                 st.rerun()  # 페이지 새로고침
 
+
 elif st.session_state.page == 'home':
     # 홈 페이지
     st.markdown('<h1 class="main-title">Welcome to 민서와 규민\'s Homepage!</h1>', unsafe_allow_html=True)
     st.image("https://via.placeholder.com/800x300.png?text=민서와 규민's+Website", use_column_width=True)
+
 
 elif st.session_state.page == 'anniversary':
     # 기념일 페이지
