@@ -1,0 +1,99 @@
+/* 기존 스타일 유지 */
+
+body {
+    background-color: #f0f2f6;
+    font-family: 'Arial', sans-serif;
+}
+
+.main-title {
+    text-align: center;
+    font-size: 3em;
+    color: #4a69bd;
+    margin-bottom: 0.5em;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.subtitle {
+    text-align: center;
+    font-size: 1.2em;
+    color: #6c5ce7;
+    margin-bottom: 2em;
+}
+
+.upload-section {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2em;
+}
+
+.uploaded-image {
+    margin-bottom: 20px;
+}
+
+.btn-primary {
+    background-color: #6c5ce7;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.btn-primary:hover {
+    background-color: #a29bfe;
+}
+
+.footer {
+    text-align: center;
+    color: #b2bec3;
+    margin-top: 3em;
+}
+
+/* 게시물 카드 스타일 */
+.post-card {
+    background-color: #ffffff;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.post-title {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 10px;
+}
+
+.post-date {
+    color: #95a5a6;
+    font-size: 0.9em;
+    margin-bottom: 15px;
+}
+
+.post-content {
+    font-size: 1em;
+    line-height: 1.6em;
+    color: #2d3436;
+    margin-bottom: 15px;
+}
+
+.post-image {
+    border-radius: 5px;
+    margin-bottom: 15px;
+}
+
+.comment-section {
+    background-color: #ecf0f1;
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 15px;
+}
+
+.comment {
+    font-size: 0.9em;
+    color: #34495e;
+    margin-bottom: 5px;
+}
