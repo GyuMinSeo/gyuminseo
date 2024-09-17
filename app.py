@@ -9,6 +9,11 @@ st.set_page_config(page_title="민서와 규민's Simple Homepage", layout="wide
 IMAGE_DIR = "uploaded_images"
 os.makedirs(IMAGE_DIR, exist_ok=True)
 
+# 파일 경로 불러오기 함수
+def get_uploaded_images():
+    """저장된 이미지 파일 목록을 불러오는 함수"""
+    return [f for f in os.listdir(IMAGE_DIR) if os.path.isfile(os.path.join(IMAGE_DIR, f))]
+
 # 페이지 상태 초기화
 if 'page' not in st.session_state:
     st.session_state.page = 'home'
@@ -52,6 +57,16 @@ if st.session_state.page == 'home':
             f.write(uploaded_file.getbuffer())
         st.image(file_path, caption="Uploaded Image", use_column_width=True)
         st.success(f"Image saved to {file_path}")
+
+    # 저장된 모든 이미지 표시
+    st.header("Previously Uploaded Images")
+    uploaded_images = get_uploaded_images()
+    if uploaded_images:
+        for image in uploaded_images:
+            image_path = os.path.join(IMAGE_DIR, image)
+            st.image(image_path, caption=image, use_column_width=True)
+    else:
+        st.write("No images uploaded yet.")
 
     # '기념일' 페이지로 이동하는 버튼
     if st.button('Go to Anniversary Page'):
