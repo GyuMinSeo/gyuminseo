@@ -27,7 +27,7 @@ if st.session_state.page == 'home':
     Hi, I'm 민서와 규민! I am currently working on creating some exciting projects using HTML and Little Man Computer (LMC).
     This page is built to showcase some personal and collaborative projects, and share memories.
     """)
-    
+
     # 섹션 2: Recent Projects
     st.header("Recent Projects")
     st.write("""
@@ -35,6 +35,14 @@ if st.session_state.page == 'home':
     - **Personal HTML Website:** Crafting a personal website to showcase blog posts and personal projects.
     - **Couple Memory Website:** A creative platform for documenting shared memories with a loved one.
     """)
+
+    # 사용자로부터 사진 업로드 받기
+    st.header("Upload a Photo")
+    uploaded_file = st.file_uploader("Choose an image", type=["jpg", "jpeg", "png"])
+
+    # 이미지 업로드 시 표시
+    if uploaded_file is not None:
+        st.image(uploaded_file, caption="Uploaded Image", use_column_width=True)
     
     # '기념일' 페이지로 이동하는 버튼
     if st.button('Go to Anniversary Page'):
