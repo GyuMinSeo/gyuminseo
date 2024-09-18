@@ -146,12 +146,12 @@ elif st.session_state.page == 'timeline':
     with col1:
         if st.button("이벤트 추가", key="add_button"):
             st.session_state.timeline_mode = 'add'
-            st.experimental_rerun()
+            st.rerun()
 
     with col2:
         if st.button("이벤트 삭제", key="delete_button"):
             st.session_state.timeline_mode = 'delete'
-            st.experimental_rerun()
+            st.rerun()
 
     # 이벤트 추가 모드
     if 'timeline_mode' in st.session_state and st.session_state.timeline_mode == 'add':
@@ -168,14 +168,14 @@ elif st.session_state.page == 'timeline':
                 save_timeline(events)
                 st.success("새로운 이벤트가 추가되었습니다!")
                 st.session_state.timeline_mode = None
-                st.experimental_rerun()
+                st.rerun()
             else:
                 st.error("이벤트 이름을 입력하세요.")
 
         # 취소 버튼
         if st.button("취소", key="cancel_add_button"):
             st.session_state.timeline_mode = None
-            st.experimental_rerun()
+            st.rerun()
 
     # 이벤트 삭제 모드
     if 'timeline_mode' in st.session_state and st.session_state.timeline_mode == 'delete':
@@ -188,7 +188,7 @@ elif st.session_state.page == 'timeline':
                 save_timeline(events)
                 st.success(f"{delete_event_name} 이벤트가 삭제되었습니다!")
                 st.session_state.timeline_mode = None
-                st.experimental_rerun()
+                st.rerun()
 
         else:
             st.write("삭제할 이벤트가 없습니다.")
@@ -196,7 +196,7 @@ elif st.session_state.page == 'timeline':
         # 취소 버튼
         if st.button("취소", key="cancel_delete_button"):
             st.session_state.timeline_mode = None
-            st.experimental_rerun()
+            st.rerun()
 
 # 기념일 페이지
 elif st.session_state.page == 'anniversary':
