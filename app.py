@@ -25,15 +25,15 @@ POSTS_DIR = "posts"
 os.makedirs(POSTS_DIR, exist_ok=True)
 IMAGE_DIR = "uploaded_images"
 os.makedirs(IMAGE_DIR, exist_ok=True)
-
-# 게시물 저장 함수
-def save_post(title, date, content, images):
+# 게시물 저장 함수에 좋아요 수 추가
+def save_post(title, date, content, images, likes=0):
     """게시물을 저장하는 함수"""
     post_data = {
         "title": title,
         "date": date.isoformat(),
         "content": content,
-        "images": [image.name for image in images]
+        "images": [image.name for image in images],
+        "likes": likes  # 좋아요 수 추가
     }
 
     post_file = os.path.join(POSTS_DIR, f"{title}.json")
@@ -45,6 +45,17 @@ def save_post(title, date, content, images):
         image_path = os.path.join(IMAGE_DIR, image.name)
         with open(image_path, "wb") as f:
             f.write(image.getbuffer())
+
+# 좋아요 저장 함수
+def update_likes(post_title, new_likes):
+    post_file = os.path.join(POSTS_DIR, f"{post_title}.json")
+    if os.path.exists(post_file):
+        with open(post_file, "r", encoding="utf-8") as f:
+            post = json.load(f)
+        post['likes'] = new_likes
+        with open(post_file, "w", encoding="utf-8") as f:
+            json.dump(post, f, ensure_ascii=False, indent=4)
+
 
 # 게시물 불러오기 함수 (시간 순으로 정렬)
 def load_posts():
@@ -81,6 +92,30 @@ def load_post_images(title):
             post = json.load(f)
         return post.get("images", [])
     return []
+
+# 댓글 저장 파일 경로 설정
+COMMENTS_DIR = "comments"
+os.makedirs(COMMENTS_DIR, exist_ok=True)
+
+# 댓글 저장 함수
+def save_comment(post_title, comment):
+    comments_file = os.path.join(COMMENTS_DIR, f"{post_title}_comments.json")
+    comments = []
+    if os.path.exists(comments_file):
+        with open(comments_file, "r", encoding="utf-8") as f:
+            comments = json.load(f)
+    comments.append({"comment": comment, "date": datetime.datetime.now().isoformat()})
+    with open(comments_file, "w", encoding="utf-8") as f:
+        json.dump(comments, f, ensure_ascii=False, indent=4)
+
+# 댓글 불러오기 함수
+def load_comments(post_title):
+    comments_file = os.path.join(COMMENTS_DIR, f"{post_title}_comments.json")
+    if os.path.exists(comments_file):
+        with open(comments_file, "r", encoding="utf-8") as f:
+            return json.load(f)
+    return []
+
 
 TIMELINE_FILE = "timeline_events.json"
 
@@ -280,7 +315,7 @@ elif st.session_state.page == '게시물':
             st.session_state.post_page = 'main'
             st.rerun()  # 즉시 페이지 갱신
 
-    # 게시물 세부 페이지
+    # 게시물 세부 페이지 수정
     elif st.session_state.post_page == 'detail':
         st.header("게시물 상세 보기")
 
@@ -294,6 +329,29 @@ elif st.session_state.page == '게시물':
         for image in selected_post["images"]:
             image_path = os.path.join(IMAGE_DIR, image)
             st.image(image_path, use_column_width=True)
+
+        # 좋아요 버튼 및 좋아요 수 표시
+        st.write(f"좋아요: {selected_post.get('likes', 0)}")
+        if st.button("좋아요"):
+            new_likes = selected_post.get('likes', 0) + 1
+            update_likes(selected_post["title"], new_likes)
+            st.success("좋아요를 눌렀습니다.")
+            st.session_state.selected_post['likes'] = new_likes
+            st.rerun()  # 즉시 페이지 갱신
+
+        # 댓글 입력 및 저장
+        st.subheader("댓글")
+        comment = st.text_area("댓글을 입력하세요")
+        if st.button("댓글 달기"):
+            if comment:
+                save_comment(selected_post["title"], comment)
+                st.success("댓글이 저장되었습니다.")
+                st.rerun()
+
+        # 저장된 댓글 불러오기
+        comments = load_comments(selected_post["title"])
+        for comment_data in comments:
+            st.write(f"{comment_data['date']}: {comment_data['comment']}")
 
         # 돌아가기 버튼
         if st.button("돌아가기"):
