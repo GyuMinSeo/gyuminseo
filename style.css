@@ -97,3 +97,48 @@ body {
     color: #34495e;
     margin-bottom: 5px;
 }
+
+/* 타임라인 컨테이너 */
+.timeline-container {
+    position: relative;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* 각 타임라인 아이템 */
+.timeline-item {
+    margin: 20px 0;
+    padding: 20px;
+    border-left: 2px solid #6c5ce7;
+    position: relative;
+}
+
+/* 날짜와 이벤트 텍스트 */
+.timeline-item .date {
+    font-size: 18px;
+    color: #4a69bd;
+    margin-bottom: 10px;
+}
+
+.timeline-item .event {
+    font-size: 22px;
+    color: #6c5ce7;
+    font-weight: bold;
+}
+
+/* 원형 아이콘 */
+.timeline-item::before {
+    content: "";
+    position: absolute;
+    left: -10px;
+    top: 20px;
+    width: 20px;
+    height: 20px;
+    background-color: #6c5ce7;
+    border-radius: 50%;
+}
+

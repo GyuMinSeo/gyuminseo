@@ -82,26 +82,121 @@ def load_post_images(title):
         return post.get("images", [])
     return []
 
+TIMELINE_FILE = "timeline_events.json"
+
+# 타임라인 이벤트 저장 함수
+def save_timeline(events):
+    with open(TIMELINE_FILE, "w", encoding="utf-8") as f:
+        json.dump(events, f, ensure_ascii=False, indent=4)
+
+# 타임라인 이벤트 불러오기 함수
+def load_timeline():
+    if os.path.exists(TIMELINE_FILE):
+        with open(TIMELINE_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    return []  # 파일이 없을 경우 빈 리스트 반환
+
+
 
 
 # 사이드바 메뉴 생성
 st.sidebar.title("우리의 발자취")
-menu = st.sidebar.radio("Go to", ["Home", "기념일", "사진첩", "게시물"])
+menu = st.sidebar.radio("Go to", ["Home", "타임라인", "기념일", "사진첩", "스토리"])
 
 # 사이드바에서 선택된 메뉴에 따라 페이지 상태 업데이트
 if menu == "Home":
     st.session_state.page = 'home'
+elif menu == "타임라인":
+    st.session_state.page = 'timeline'
 elif menu == "기념일":
     st.session_state.page = 'anniversary'
 elif menu == "사진첩":
     st.session_state.page = 'photo'
-elif menu == "게시물":
+elif menu == "스토리":
     st.session_state.page = '게시물'
 
 # 홈 페이지
 if st.session_state.page == 'home':
     st.markdown('<h1 class="main-title">Welcome to 민서와 규민\'s Homepage!</h1>', unsafe_allow_html=True)
     st.image("https://via.placeholder.com/800x300.png?text=민서와 규민's+Website", use_column_width=True)
+
+# 타임라인 페이지 (이벤트 보기 및 추가/삭제 가능)
+elif st.session_state.page == 'timeline':
+    st.header("TimeLine")
+
+    # 타임라인 이벤트 불러오기
+    events = load_timeline()
+
+    # 타임라인 이벤트 출력
+    st.markdown('<div class="timeline-container">', unsafe_allow_html=True)
+    
+    for event in events:
+        st.markdown(f'''
+        <div class="timeline-item">
+            <div class="date">{event["date"]}</div>
+            <div class="event">{event["event"]}</div>
+        </div>
+        ''', unsafe_allow_html=True)
+    
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    # 추가 및 삭제 버튼
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        if st.button("이벤트 추가", key="add_button"):
+            st.session_state.timeline_mode = 'add'
+            st.experimental_rerun()
+
+    with col2:
+        if st.button("이벤트 삭제", key="delete_button"):
+            st.session_state.timeline_mode = 'delete'
+            st.experimental_rerun()
+
+    # 이벤트 추가 모드
+    if 'timeline_mode' in st.session_state and st.session_state.timeline_mode == 'add':
+        st.subheader("새로운 이벤트 추가하기")
+        new_event_date = st.date_input("날짜를 선택하세요", datetime.date.today())
+        new_event_name = st.text_input("이벤트를 입력하세요")
+
+        if st.button("이벤트 저장", key="save_button"):
+            if new_event_name:
+                # 새로운 이벤트 추가
+                new_event = {"date": new_event_date.isoformat(), "event": new_event_name}
+                events.append(new_event)
+                events.sort(key=lambda x: x["date"])  # 날짜순 정렬
+                save_timeline(events)
+                st.success("새로운 이벤트가 추가되었습니다!")
+                st.session_state.timeline_mode = None
+                st.experimental_rerun()
+            else:
+                st.error("이벤트 이름을 입력하세요.")
+
+        # 취소 버튼
+        if st.button("취소", key="cancel_add_button"):
+            st.session_state.timeline_mode = None
+            st.experimental_rerun()
+
+    # 이벤트 삭제 모드
+    if 'timeline_mode' in st.session_state and st.session_state.timeline_mode == 'delete':
+        st.subheader("이벤트 삭제하기")
+        if events:
+            delete_event_name = st.selectbox("삭제할 이벤트를 선택하세요", [event["event"] for event in events])
+
+            if st.button("이벤트 삭제", key="confirm_delete_button"):
+                events = [event for event in events if event["event"] != delete_event_name]
+                save_timeline(events)
+                st.success(f"{delete_event_name} 이벤트가 삭제되었습니다!")
+                st.session_state.timeline_mode = None
+                st.experimental_rerun()
+
+        else:
+            st.write("삭제할 이벤트가 없습니다.")
+
+        # 취소 버튼
+        if st.button("취소", key="cancel_delete_button"):
+            st.session_state.timeline_mode = None
+            st.experimental_rerun()
 
 # 기념일 페이지
 elif st.session_state.page == 'anniversary':
