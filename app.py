@@ -11,14 +11,51 @@ if 'page' not in st.session_state:
     st.session_state.page = 'home'  # 기본 페이지는 'home'으로 설정
 if 'post_page' not in st.session_state:
     st.session_state.post_page = 'main'  # 게시물 페이지 기본값은 'main'
+if 'wishlist_page' not in st.session_state:
+    st.session_state.wishlist_page = 'main'  # 위시리스트 페이지 기본값은 'main'
 
 # CSS 파일 불러오기 함수
 def load_css(file_name):
     with open(file_name, "r", encoding="utf-8") as f:
         st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
+
 # CSS 파일 불러오기
 load_css("style.css")
+
+# 위시리스트 저장 파일 경로
+WISHLIST_FILE = "wishlist_items.json"
+
+# 위시리스트 저장 및 불러오기 함수 수정 (완료 상태 포함)
+def save_wishlist_item(item, completed=False):
+    wishlist = load_wishlist_items()
+    wishlist.append({"item": item, "completed": completed})  # 완료 여부를 함께 저장
+    with open(WISHLIST_FILE, "w", encoding="utf-8") as f:
+        json.dump(wishlist, f, ensure_ascii=False, indent=4)
+
+def load_wishlist_items():
+    if os.path.exists(WISHLIST_FILE):
+        with open(WISHLIST_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    return []
+
+# 위시리스트 항목 상태 변경 함수 (완료/미완료 전환)
+def toggle_wishlist_item_status(item_name):
+    wishlist = load_wishlist_items()
+    for item in wishlist:
+        if item["item"] == item_name:
+            item["completed"] = not item["completed"]  # 완료 여부 토글
+            break
+    with open(WISHLIST_FILE, "w", encoding="utf-8") as f:
+        json.dump(wishlist, f, ensure_ascii=False, indent=4)
+
+# 위시리스트 항목 삭제 함수 (item 딕셔너리 내의 'item' 값을 비교)
+def delete_wishlist_item(item_name):
+    wishlist = load_wishlist_items()
+    wishlist = [i for i in wishlist if i["item"] != item_name]  # 'item' 값으로 비교
+    with open(WISHLIST_FILE, "w", encoding="utf-8") as f:
+        json.dump(wishlist, f, ensure_ascii=False, indent=4)
+
 
 # 이미지 및 게시물 저장 디렉토리 설정
 POSTS_DIR = "posts"
@@ -133,10 +170,48 @@ def load_timeline():
 
 
 
+# 다이어리 저장 파일 경로 설정
+DIARY_DIR = "diaries"
+os.makedirs(DIARY_DIR, exist_ok=True)
+
+# 다이어리 저장 함수
+def save_diary(title, date, content):
+    """다이어리를 저장하는 함수"""
+    diary_data = {
+        "title": title,
+        "date": date.isoformat(),
+        "content": content
+    }
+    diary_file = os.path.join(DIARY_DIR, f"{date.isoformat()}_{title}.json")
+    with open(diary_file, "w", encoding="utf-8") as f:
+        json.dump(diary_data, f, ensure_ascii=False, indent=4)
+
+# 다이어리 불러오기 함수
+def load_diaries():
+    """저장된 다이어리들을 불러오는 함수 (시간 순으로 정렬)"""
+    diaries = []
+    for diary_file in os.listdir(DIARY_DIR):
+        if diary_file.endswith(".json"):
+            with open(os.path.join(DIARY_DIR, diary_file), "r", encoding="utf-8") as f:
+                diaries.append(json.load(f))
+    
+    # 날짜를 기준으로 내림차순 정렬 (최신 다이어리가 위로 오게)
+    diaries.sort(key=lambda diary: diary['date'], reverse=True)
+    return diaries
+
+# 다이어리 삭제 함수
+def delete_diary(title, date):
+    """다이어리를 삭제하는 함수"""
+    diary_file = os.path.join(DIARY_DIR, f"{date}_{title}.json")
+    if os.path.exists(diary_file):
+        os.remove(diary_file)
+
+
+
 
 # 사이드바 메뉴 생성
 st.sidebar.title("우리의 발자취")
-menu = st.sidebar.radio("Go to", ["Home", "타임라인", "기념일", "사진첩", "스토리"])
+menu = st.sidebar.radio("Go to", ["Home", "타임라인", "기념일", "사진첩", "스토리", "다이어리", "위시리스트"])
 
 # 사이드바에서 선택된 메뉴에 따라 페이지 상태 업데이트
 if menu == "Home":
@@ -149,6 +224,10 @@ elif menu == "사진첩":
     st.session_state.page = 'photo'
 elif menu == "스토리":
     st.session_state.page = '게시물'
+elif menu == "다이어리":
+    st.session_state.page = 'diary'
+elif menu == "위시리스트":
+    st.session_state.page = 'wishlist'
 
 # 홈 페이지
 if st.session_state.page == 'home':
@@ -364,6 +443,128 @@ elif st.session_state.page == '게시물':
             st.success("게시물이 성공적으로 삭제되었습니다.")
             st.session_state.post_page = 'main'
             st.rerun()  # 즉시 페이지 갱신
+
+# 위시리스트 항목 출력 부분 수정
+elif st.session_state.page == 'wishlist':
+    if st.session_state.wishlist_page == 'main':
+        st.header("Wishlist")
+        
+        # 기존 위시리스트 항목 보여주기
+        st.subheader("위시리스트")
+        wishlist_items = load_wishlist_items()
+        
+        if wishlist_items:
+            for item in wishlist_items:
+                if isinstance(item, dict):
+                    item_display = f"~~{item['item']}~~" if item["completed"] else item["item"]
+                    
+                    # 세 개의 열을 생성하여 아이템 이름, 완료 버튼, 삭제 버튼 배치
+                    col1, col2, col3 = st.columns([6, 2, 2])  # 각 열의 비율을 6:2:2로 설정
+                    
+                    with col1:
+                        st.markdown(f"{item_display}", unsafe_allow_html=True)  # 아이템 표시
+                        
+                    with col2:
+                        # 완료 상태 변경 버튼
+                        if st.button(f"완료", key=f"complete_{item['item']}"):
+                            toggle_wishlist_item_status(item["item"])  # 완료 상태 전환
+                            st.success(f"'{item['item']}' 상태가 변경되었습니다.")
+                            st.rerun()  # 즉시 페이지 갱신
+
+                    with col3:
+                        # 삭제 버튼 (아이템의 'item' 값으로 삭제)
+                        if st.button(f"삭제", key=f"delete_{item['item']}"):
+                            delete_wishlist_item(item["item"])  # item 대신 item["item"]으로 삭제
+                            st.success(f"'{item['item']}'이(가) 삭제되었습니다.")
+                            st.rerun()  # 즉시 페이지 갱신
+                else:
+                    st.error(f"잘못된 항목 형식: {item}")
+        else:
+            st.write("위시리스트가 비어 있습니다.")
+        
+        # 위시리스트 추가 버튼
+        if st.button("위시리스트 추가"):
+            st.session_state.wishlist_page = 'add'  # 'add' 페이지로 이동
+            st.rerun()  # 즉시 페이지 갱신
+
+    # 위시리스트 추가 페이지
+    elif st.session_state.wishlist_page == 'add':
+        st.header("위시리스트 항목 추가하기")
+        
+        wishlist_item = st.text_input("위시리스트에 추가할 아이템을 입력하세요")
+        
+        if st.button("추가"):
+            if wishlist_item:
+                save_wishlist_item(wishlist_item)  # 추가 시 완료 상태는 False로 저장
+                st.success(f"'{wishlist_item}'이(가) 위시리스트에 추가되었습니다!")
+                st.session_state.wishlist_page = 'main'  # 추가 후 다시 메인 페이지로 이동
+                st.rerun()  # 즉시 페이지 갱신
+            else:
+                st.error("아이템 이름을 입력하세요.")
+
+        # 취소 버튼
+        if st.button("취소"):
+            st.session_state.wishlist_page = 'main'
+            st.rerun()  # 즉시 페이지 갱신
+
+
+
+
+
+
+
+
+# 다이어리 페이지 구현
+elif st.session_state.page == 'diary':
+    st.header("Diary Page")
+
+    # 저장된 다이어리 목록 보기
+    diaries = load_diaries()
+    
+    if st.session_state.get('diary_mode') == 'main' or 'diary_mode' not in st.session_state:
+        st.session_state.diary_mode = 'main'
+
+    # 다이어리 메인 페이지 (목록 보기)
+    if st.session_state.diary_mode == 'main':
+        st.subheader("저장된 다이어리 목록")
+
+        if diaries:
+            for diary in diaries:
+                with st.expander(f"{diary['title']}({diary['date']})"):
+                    st.write(diary["content"])
+                    if st.button(f"삭제", key=f"delete_{diary['date']}_{diary['title']}"):
+                        delete_diary(diary['title'], diary['date'])
+                        st.success(f"'{diary['title']}'이(가) 삭제되었습니다.")
+                        st.rerun()
+        else:
+            st.write("저장된 다이어리가 없습니다.")
+        
+        # 다이어리 추가 버튼
+        if st.button("다이어리 추가하기"):
+            st.session_state.diary_mode = 'add'
+            st.rerun()
+
+    # 다이어리 작성 페이지
+    elif st.session_state.diary_mode == 'add':
+        st.subheader("새로운 다이어리 작성하기")
+        
+        diary_title = st.text_input("제목을 입력하세요")
+        diary_date = st.date_input("날짜를 선택하세요", datetime.date.today())
+        diary_content = st.text_area("내용을 입력하세요")
+
+        if st.button("저장하기"):
+            if diary_title and diary_content:
+                save_diary(diary_title, diary_date, diary_content)
+                st.success("다이어리가 저장되었습니다!")
+                st.session_state.diary_mode = 'main'  # 저장 후 메인 페이지로 이동
+                st.rerun()
+            else:
+                st.error("제목과 내용을 모두 입력해야 합니다.")
+
+        if st.button("취소"):
+            st.session_state.diary_mode = 'main'
+            st.rerun()
+
 
 
 # 푸터
