@@ -2,6 +2,18 @@ import streamlit as st
 import os
 import json
 import datetime
+import firebase_admin
+from firebase_admin import credentials, firestore
+
+# Firebase 초기화가 이미 되었는지 확인
+if not firebase_admin._apps:
+    cred = credentials.Certificate("C:/gyuminseo/gyuminseo/minseo-dd5fe-firebase-adminsdk-1vays-3faccecc75.json")
+    firebase_admin.initialize_app(cred)
+
+# Firestore 클라이언트 생성
+db = firestore.client()
+
+
 
 # 페이지 제목과 설명
 st.set_page_config(page_title="민서와 규민's Lovely Homepage", layout="wide")
@@ -21,41 +33,39 @@ def load_css(file_name):
 
 
 # CSS 파일 불러오기
-load_css("style.css")
+load_css("C:/gyuminseo/gyuminseo/style.css")
 
 # 위시리스트 저장 파일 경로
 WISHLIST_FILE = "wishlist_items.json"
-
-# 위시리스트 저장 및 불러오기 함수 수정 (완료 상태 포함)
+# 위시리스트 저장 함수 수정 (Firestore에 저장)
 def save_wishlist_item(item, completed=False):
-    wishlist = load_wishlist_items()
-    wishlist.append({"item": item, "completed": completed})  # 완료 여부를 함께 저장
-    with open(WISHLIST_FILE, "w", encoding="utf-8") as f:
-        json.dump(wishlist, f, ensure_ascii=False, indent=4)
+    wishlist_ref = db.collection("wishlist")
+    wishlist_ref.add({"item": item, "completed": completed})
 
+# 위시리스트 불러오기 함수 수정 (Firestore에서 불러오기)
 def load_wishlist_items():
-    if os.path.exists(WISHLIST_FILE):
-        with open(WISHLIST_FILE, "r", encoding="utf-8") as f:
-            return json.load(f)
-    return []
+    wishlist_ref = db.collection("wishlist")
+    wishlist_items = []
+    for doc in wishlist_ref.stream():
+        wishlist_items.append(doc.to_dict())
+    return wishlist_items
 
-# 위시리스트 항목 상태 변경 함수 (완료/미완료 전환)
+# 위시리스트 상태 변경 함수 수정 (Firestore에서 업데이트)
 def toggle_wishlist_item_status(item_name):
-    wishlist = load_wishlist_items()
-    for item in wishlist:
-        if item["item"] == item_name:
-            item["completed"] = not item["completed"]  # 완료 여부 토글
+    wishlist_ref = db.collection("wishlist")
+    for doc in wishlist_ref.stream():
+        if doc.to_dict()["item"] == item_name:
+            new_status = not doc.to_dict()["completed"]
+            wishlist_ref.document(doc.id).update({"completed": new_status})
             break
-    with open(WISHLIST_FILE, "w", encoding="utf-8") as f:
-        json.dump(wishlist, f, ensure_ascii=False, indent=4)
 
-# 위시리스트 항목 삭제 함수 (item 딕셔너리 내의 'item' 값을 비교)
+# 위시리스트 삭제 함수 수정 (Firestore에서 삭제)
 def delete_wishlist_item(item_name):
-    wishlist = load_wishlist_items()
-    wishlist = [i for i in wishlist if i["item"] != item_name]  # 'item' 값으로 비교
-    with open(WISHLIST_FILE, "w", encoding="utf-8") as f:
-        json.dump(wishlist, f, ensure_ascii=False, indent=4)
-
+    wishlist_ref = db.collection("wishlist")
+    for doc in wishlist_ref.stream():
+        if doc.to_dict()["item"] == item_name:
+            wishlist_ref.document(doc.id).delete()
+            break
 
 # 이미지 및 게시물 저장 디렉토리 설정
 POSTS_DIR = "posts"
