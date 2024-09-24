@@ -1,62 +1,71 @@
-/* 기존 스타일 유지 */
+/* 기존 스타일 유지, 그러나 사랑스러운 테마로 수정 */
 
+/* 배경을 밝고 따뜻한 색상으로 변경 */
 body {
-    background-color: #f0f2f6;
+    background: linear-gradient(135deg, #ff9ff3, #feca57);
     font-family: 'Arial', sans-serif;
+    color: #2d3436;
 }
 
+/* 메인 타이틀을 따뜻한 핑크 색상으로 */
 .main-title {
     text-align: center;
     font-size: 3em;
-    color: #4a69bd;
+    color: #ff6b81;
     margin-bottom: 0.5em;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    text-shadow: 2px 2px 4px rgba(255, 182, 193, 0.5);
 }
 
+/* 부제목도 밝은 연보라 색상으로 */
 .subtitle {
     text-align: center;
     font-size: 1.2em;
-    color: #6c5ce7;
+    color: #c56cf0;
     margin-bottom: 2em;
 }
 
+/* 업로드 섹션: 부드러운 테두리와 그림자 */
 .upload-section {
     background-color: #fff;
     padding: 20px;
-    border-radius: 10px;
+    border-radius: 20px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     margin-bottom: 2em;
 }
 
+/* 업로드된 이미지 스타일 유지 */
 .uploaded-image {
     margin-bottom: 20px;
 }
 
+/* 버튼 색상을 사랑스러운 핑크 톤으로 변경 */
 .btn-primary {
-    background-color: #6c5ce7;
+    background-color: #ff6b81;
     color: white;
     padding: 10px 20px;
-    border-radius: 5px;
+    border-radius: 25px;
     text-align: center;
     cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
 .btn-primary:hover {
-    background-color: #a29bfe;
+    background-color: #ff9ff3;
 }
 
+/* 푸터는 따뜻한 회색으로 */
 .footer {
     text-align: center;
     color: #b2bec3;
     margin-top: 3em;
 }
 
-/* 게시물 카드 스타일 */
+/* 게시물 카드 스타일: 따뜻한 배경과 부드러운 테두리 */
 .post-card {
     background-color: #ffffff;
     padding: 20px;
     margin-bottom: 20px;
-    border-radius: 8px;
+    border-radius: 15px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
@@ -85,10 +94,11 @@ body {
     margin-bottom: 15px;
 }
 
+/* 댓글 섹션은 밝고 따뜻하게 */
 .comment-section {
-    background-color: #ecf0f1;
+    background-color: #fff0f6;
     padding: 10px;
-    border-radius: 5px;
+    border-radius: 10px;
     margin-top: 15px;
 }
 
@@ -98,7 +108,7 @@ body {
     margin-bottom: 5px;
 }
 
-/* 타임라인 컨테이너 */
+/* 타임라인 스타일: 부드러운 색감 추가 */
 .timeline-container {
     position: relative;
     max-width: 800px;
@@ -109,28 +119,26 @@ body {
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* 각 타임라인 아이템 */
 .timeline-item {
     margin: 20px 0;
     padding: 20px;
-    border-left: 2px solid #6c5ce7;
+    border-left: 2px solid #feca57;
     position: relative;
+    background-color: #fff0f6;
 }
 
-/* 날짜와 이벤트 텍스트 */
 .timeline-item .date {
     font-size: 18px;
-    color: #4a69bd;
+    color: #ff6b81;
     margin-bottom: 10px;
 }
 
 .timeline-item .event {
     font-size: 22px;
-    color: #6c5ce7;
+    color: #c56cf0;
     font-weight: bold;
 }
 
-/* 원형 아이콘 */
 .timeline-item::before {
     content: "";
     position: absolute;
@@ -138,8 +146,6 @@ body {
     top: 20px;
     width: 20px;
     height: 20px;
-    background-color: #6c5ce7;
+    background-color: #ff9ff3;
     border-radius: 50%;
 }
-
-
