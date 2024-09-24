@@ -17,7 +17,7 @@
     width: 200%;
     height: 200%;
     background: transparent;
-    background-image: radial-gradient(white, transparent);
+    background-image: radial-gradient(rgb(31, 141, 79), transparent);
     z-index: -2;  /* 하트 아래에 표시되도록 설정 */
     animation: starMove 100s linear infinite;
     opacity: 0.8;
