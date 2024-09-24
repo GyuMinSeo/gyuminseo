@@ -91,6 +91,19 @@ def load_images_from_firestore():
         images.append(doc.to_dict())
     return images
 
+# Firebase Storage에서 이미지를 삭제하는 함수
+def delete_image_from_firebase(image_name):
+    bucket = firebase_admin.storage.bucket('minseo-dd5fe.appspot.com')  # Firebase Storage 버킷 이름 명시
+    blob = bucket.blob(f'uploaded_images/{image_name}')
+    blob.delete()
+
+# Firestore에서 이미지 정보 삭제하는 함수
+def delete_image_info_from_firestore(image_name):
+    images_ref = db.collection("photos")
+    for doc in images_ref.stream():
+        if doc.to_dict()["image_name"] == image_name:
+            doc.reference.delete()
+            break
 
 
 # 위시리스트 저장 함수 수정 (Firestore에 저장)
@@ -392,7 +405,7 @@ elif st.session_state.page == 'anniversary':
     days_until_gyumin_birthday = days_until_birthday(gyumin_birthday)
     st.markdown(f'<p class="anniversary-description">규민의 생일까지 {days_until_gyumin_birthday}일 남았습니다.</p>', unsafe_allow_html=True)
 
-# 사진첩 페이지 (Firebase Storage에 이미지를 업로드하고 Firestore에 저장한 후, 영구적으로 표시)
+# 사진첩 페이지 (이미지 업로드 및 삭제 기능 추가)
 elif st.session_state.page == 'photo':
     st.header("Upload a Photo")
     uploaded_file = st.file_uploader("Choose an image", type=["jpg", "jpeg", "png"])
@@ -408,15 +421,23 @@ elif st.session_state.page == 'photo':
         st.image(image_url, use_column_width=True, caption="Uploaded Image")
         st.success("Image successfully uploaded!")
 
-    # Firestore에서 저장된 이미지들을 불러와 표시
+    # Firestore에서 저장된 이미지들을 불러와 표시 및 삭제 기능 추가
     st.header("Uploaded Photos")
     saved_images = load_images_from_firestore()
     
     if saved_images:
         for img in saved_images:
-            st.image(img['image_url'], use_column_width=True, caption=img['image_name'])
+            col1, col2 = st.columns([8, 2])
+            with col1:
+                st.image(img['image_url'], use_column_width=True, caption=img['image_name'])
+            with col2:
+                if st.button(f"삭제", key=f"delete_{img['image_name']}"):
+                    delete_image_from_firebase(img['image_name'])  # Firebase Storage에서 이미지 삭제
+                    delete_image_info_from_firestore(img['image_name'])  # Firestore에서 이미지 정보 삭제
+                    st.success(f"{img['image_name']} 이미지가 삭제되었습니다.")
+                    st.rerun()  # 페이지를 다시 로드하여 업데이트
     else:
-        st.write("No photos uploaded yet.")
+        st.write("아직 업로드된 사진이 없습니다.")
 
 
 # 게시물 페이지
