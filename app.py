@@ -257,15 +257,18 @@ elif menu == "다이어리":
 elif menu == "위시리스트":
     st.session_state.page = 'wishlist'
 
-# 하트 애니메이션 추가
-st.markdown("""
-<div class="heart-wrapper">
+# 하트 애니메이션을 위한 HTML
+st.markdown('''
+<div class="hearts-container">
+    <div class="heart"></div>
     <div class="heart"></div>
     <div class="heart"></div>
     <div class="heart"></div>
     <div class="heart"></div>
 </div>
-""", unsafe_allow_html=True)
+''', unsafe_allow_html=True)
+
+
 
 # 나머지 페이지 콘텐츠는 그대로 유지
 st.markdown('<h1 class="main-title">Welcome to 민서와 규민\'s Homepage!</h1>', unsafe_allow_html=True)
