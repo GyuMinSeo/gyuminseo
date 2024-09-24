@@ -52,16 +52,6 @@ def load_css(file_name):
 # CSS 파일 불러오기
 load_css("style.css")
 
-# 하트 애니메이션 추가
-st.markdown("""
-<div class="heart-wrapper">
-    <div class="heart"></div>
-    <div class="heart"></div>
-    <div class="heart"></div>
-    <div class="heart"></div>
-</div>
-""", unsafe_allow_html=True)
-
 # Firebase Storage에서 이미지 URL을 가져오는 함수
 def get_image_url_from_firebase(image_name):
     client = storage.Client()
@@ -266,6 +256,18 @@ elif menu == "다이어리":
     st.session_state.page = 'diary'
 elif menu == "위시리스트":
     st.session_state.page = 'wishlist'
+
+
+# 하트 애니메이션 추가
+st.markdown("""
+<div class="heart-wrapper">
+    <div class="heart"></div>
+    <div class="heart"></div>
+    <div class="heart"></div>
+    <div class="heart"></div>
+</div>
+""", unsafe_allow_html=True)
+
 
 # 홈 페이지
 if st.session_state.page == 'home':
