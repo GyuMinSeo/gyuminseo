@@ -33,6 +33,13 @@ body {
     animation: twinkling 1.5s infinite ease-in-out;
 }
 
+/* 여러 개의 별을 랜덤한 위치에 배치 */
+.star:nth-child(1) { top: 10%; left: 20%; }
+.star:nth-child(2) { top: 30%; left: 50%; }
+.star:nth-child(3) { top: 70%; left: 80%; }
+.star:nth-child(4) { top: 40%; left: 60%; }
+.star:nth-child(5) { top: 90%; left: 10%; }
+
 /* 랜덤한 위치에 별들을 배치하는 코드 */
 @keyframes moveStars {
     from { transform: translateY(0); }

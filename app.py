@@ -267,16 +267,18 @@ st.markdown('''
 </div>
 ''', unsafe_allow_html=True)
 
+
 st.markdown('''
     <div class="stars">
-        <div class="star" style="top: 10%; left: 20%;"></div>
-        <div class="star" style="top: 30%; left: 50%;"></div>
-        <div class="star" style="top: 70%; left: 80%;"></div>
-        <div class="star" style="top: 40%; left: 60%;"></div>
-        <div class="star" style="top: 90%; left: 10%;"></div>
-        <!-- 여러 별들을 추가할 수 있습니다 -->
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <!-- 더 많은 별을 추가 가능 -->
     </div>
 ''', unsafe_allow_html=True)
+
 
 
 
