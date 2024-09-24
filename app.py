@@ -266,7 +266,6 @@ st.markdown('''
     <div class="heart"></div>
     <div class="heart"></div>
 </div>
-<div class="stars"></div>  <!-- 별 배경 추가 -->
 ''', unsafe_allow_html=True)
 
 # 홈 페이지
