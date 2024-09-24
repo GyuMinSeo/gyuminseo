@@ -1,3 +1,33 @@
+/* 별 애니메이션을 위한 배경 설정 */
+@keyframes starMove {
+    0% {
+        transform: translateX(0) translateY(0);
+    }
+    100% {
+        transform: translateX(-100vw) translateY(100vh);
+    }
+}
+
+body {
+    background-color: #001d3d;  /* 어두운 밤하늘 색상 */
+    overflow: hidden;
+    position: relative;
+}
+
+/* 별이 움직이는 애니메이션 */
+.stars {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 200%;
+    height: 200%;
+    background: transparent;
+    background-image: radial-gradient(white, transparent);
+    z-index: -2;  /* 하트 아래에 표시되도록 설정 */
+    animation: starMove 100s linear infinite;
+    opacity: 0.8;
+}
+
 /* 하트 애니메이션 */
 @keyframes float {
     0% {
@@ -56,31 +86,31 @@
 
 /* 하트가 다양한 위치에서 나타나도록 설정 */
 .heart:nth-child(1) {
-    top: 20%;  /* 위쪽에서 나타남 */
+    top: 20%;
     left: 15%;
     animation-delay: 0s;
     animation-duration: 4s;
 }
 .heart:nth-child(2) {
-    top: 40%;  /* 중간 위치 */
+    top: 40%;
     left: 35%;
     animation-delay: 1s;
     animation-duration: 6s;
 }
 .heart:nth-child(3) {
-    top: 60%;  /* 페이지 중간에서 나타남 */
+    top: 60%;
     left: 55%;
     animation-delay: 2s;
     animation-duration: 4.5s;
 }
 .heart:nth-child(4) {
-    top: 30%;  /* 조금 위쪽 */
+    top: 30%;
     left: 75%;
     animation-delay: 3s;
     animation-duration: 5.5s;
 }
 .heart:nth-child(5) {
-    top: 70%;  /* 가장 아래쪽 */
+    top: 70%;
     left: 90%;
     animation-delay: 4s;
     animation-duration: 6s;
