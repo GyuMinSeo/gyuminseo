@@ -16,72 +16,72 @@
     left: 0;
     width: 100%;
     height: 100%;
-    pointer-events: none;  /* 클릭 이벤트 방지 */
-    z-index: 1000;  /* 페이지의 다른 요소들보다 위에 나타나도록 설정 */
-    overflow: hidden;  /* 하트가 페이지 밖으로 나가지 않도록 설정 */
+    pointer-events: none;
+    z-index: 1000;
+    overflow: hidden;
 }
 
 .heart {
     position: absolute;
-    width: 30px;  /* 하트 크기 줄이기 */
-    height: 30px;  /* 하트 크기 줄이기 */
-    background-color: #ff6b81;  /* 분홍색 하트 */
+    width: 30px;
+    height: 30px;
+    background-color: #ff6b81;
     transform: rotate(-45deg);
     animation: float 5s infinite ease-in-out;
     opacity: 0;
-    z-index: 1000;  /* 다른 요소보다 위에 나타나도록 설정 */
+    z-index: 1000;
 }
 
 /* 하트의 윗부분 (원 모양) */
 .heart::before, .heart::after {
     content: "";
     position: absolute;
-    width: 30px;  /* 줄어든 크기에 맞게 조정 */
+    width: 30px;
     height: 30px;
-    background-color: #ff6b81;  /* 분홍색 하트 */
+    background-color: #ff6b81;
     border-radius: 50%;
 }
 
 /* 왼쪽 원 */
 .heart::before {
-    top: -15px;  /* 위치 조정 */
+    top: -15px;
     left: 0;
 }
 
 /* 오른쪽 원 */
 .heart::after {
     top: 0;
-    left: 15px;  /* 위치 조정 */
+    left: 15px;
 }
 
 /* 하트가 다양한 위치에서 나타나도록 설정 */
 .heart:nth-child(1) {
-    top: 10%;  /* 더 위쪽에서 나타남 */
-    left: 10%;
+    top: 20%;  /* 위쪽에서 나타남 */
+    left: 15%;
     animation-delay: 0s;
     animation-duration: 4s;
 }
 .heart:nth-child(2) {
-    top: 30%;  /* 중간 위치 */
-    left: 25%;
+    top: 40%;  /* 중간 위치 */
+    left: 35%;
     animation-delay: 1s;
     animation-duration: 6s;
 }
 .heart:nth-child(3) {
-    top: 50%;  /* 페이지 중간에서 나타남 */
-    left: 40%;
+    top: 60%;  /* 페이지 중간에서 나타남 */
+    left: 55%;
     animation-delay: 2s;
     animation-duration: 4.5s;
 }
 .heart:nth-child(4) {
-    top: 70%;  /* 아래쪽에서 나타남 */
-    left: 60%;
+    top: 30%;  /* 조금 위쪽 */
+    left: 75%;
     animation-delay: 3s;
     animation-duration: 5.5s;
 }
 .heart:nth-child(5) {
-    top: 90%;  /* 가장 아래쪽 */
-    left: 75%;
+    top: 70%;  /* 가장 아래쪽 */
+    left: 90%;
     animation-delay: 4s;
     animation-duration: 6s;
 }
