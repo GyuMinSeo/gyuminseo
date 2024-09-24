@@ -258,16 +258,6 @@ elif menu == "위시리스트":
     st.session_state.page = 'wishlist'
 
 
-# 하트 애니메이션 추가
-st.markdown("""
-<div class="heart-wrapper">
-    <div class="heart"></div>
-    <div class="heart"></div>
-    <div class="heart"></div>
-    <div class="heart"></div>
-</div>
-""", unsafe_allow_html=True)
-
 
 # 홈 페이지
 if st.session_state.page == 'home':
