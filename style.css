@@ -12,6 +12,7 @@ body {
     background-color: #001d3d;  /* 어두운 밤하늘 색상 */
     overflow: hidden;
     position: relative;
+    z-index: -100;
 }
 
 /* 별이 움직이는 애니메이션 */
