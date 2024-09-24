@@ -258,7 +258,6 @@ elif menu == "위시리스트":
     st.session_state.page = 'wishlist'
 
 st.markdown('''
-<div class="stars"></div>  <!-- 별 배경 추가 -->
 <div class="hearts-container">
     <div class="heart"></div>
     <div class="heart"></div>
