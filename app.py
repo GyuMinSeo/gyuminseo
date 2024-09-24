@@ -267,21 +267,6 @@ st.markdown('''
 </div>
 ''', unsafe_allow_html=True)
 
-
-st.markdown('''
-    <div class="stars">
-        <div class="star"></div>
-        <div class="star"></div>
-        <div class="star"></div>
-        <div class="star"></div>
-        <div class="star"></div>
-        <!-- 더 많은 별을 추가 가능 -->
-    </div>
-''', unsafe_allow_html=True)
-
-
-
-
 # 홈 페이지
 if st.session_state.page == 'home':
     st.markdown('<h1 class="main-title">Welcome to 민서와 규민\'s Homepage!</h1>', unsafe_allow_html=True)
