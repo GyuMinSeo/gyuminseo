@@ -22,42 +22,64 @@
 
 .heart {
     position: absolute;
-    width: 40px;
-    height: 40px;
-    background-image: url('https://via.placeholder.com/40.png?text=❤️');  /* 하트 이미지 URL (임시) */
-    background-size: cover;
+    width: 50px;
+    height: 50px;
+    background-color: red;
+    transform: rotate(-45deg);
     animation: float 5s infinite ease-in-out;
     opacity: 0;
 }
 
-/* 여러 하트들이 서로 다른 속도로 떠오르도록 랜덤하게 설정 */
+/* 각 하트가 서로 다른 위치에 나타나도록 설정 */
 .heart:nth-child(1) {
-    top: 80%;
+    top: 90%;
     left: 10%;
     animation-delay: 0s;
-    animation-duration: 4s;
+    animation-duration: 5s;
 }
 .heart:nth-child(2) {
-    top: 90%;
-    left: 25%;
+    top: 85%;
+    left: 30%;
     animation-delay: 1s;
-    animation-duration: 6s;
+    animation-duration: 7s;
 }
 .heart:nth-child(3) {
-    top: 85%;
-    left: 40%;
+    top: 90%;
+    left: 50%;
     animation-delay: 2s;
-    animation-duration: 4.5s;
+    animation-duration: 4s;
 }
 .heart:nth-child(4) {
-    top: 90%;
-    left: 60%;
+    top: 85%;
+    left: 70%;
     animation-delay: 3s;
-    animation-duration: 5.5s;
+    animation-duration: 6s;
 }
 .heart:nth-child(5) {
-    top: 85%;
-    left: 75%;
+    top: 90%;
+    left: 90%;
     animation-delay: 4s;
-    animation-duration: 6s;
+    animation-duration: 5s;
+}
+
+/* 하트의 윗부분 (원 모양) */
+.heart::before, .heart::after {
+    content: "";
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    background-color: red;
+    border-radius: 50%;
+}
+
+/* 왼쪽 원 */
+.heart::before {
+    top: -25px;
+    left: 0;
+}
+
+/* 오른쪽 원 */
+.heart::after {
+    top: 0;
+    left: 25px;
 }

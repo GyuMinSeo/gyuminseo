@@ -268,12 +268,6 @@ st.markdown('''
 </div>
 ''', unsafe_allow_html=True)
 
-
-
-# 나머지 페이지 콘텐츠는 그대로 유지
-st.markdown('<h1 class="main-title">Welcome to 민서와 규민\'s Homepage!</h1>', unsafe_allow_html=True)
-
-
 # 홈 페이지
 if st.session_state.page == 'home':
     st.markdown('<h1 class="main-title">Welcome to 민서와 규민\'s Homepage!</h1>', unsafe_allow_html=True)
