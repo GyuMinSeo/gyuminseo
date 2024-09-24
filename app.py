@@ -6,12 +6,13 @@ import firebase_admin
 from firebase_admin import firestore
 from firebase_admin import credentials, storage
 
-# Firebase 초기화가 이미 되었는지 확인
+# Firebase 초기화가 이미 되었는지 확인d
 if not firebase_admin._apps:
     cred = credentials.Certificate("C:/gyuminseo/gyuminseo/minseo-dd5fe-firebase-adminsdk-1vays-3faccecc75.json")
     firebase_admin.initialize_app(cred, {
         'storageBucket': 'minseo-dd5fe.appspot.com'  # 실제 Firebase 프로젝트의 Storage 버킷 이름 입력
     })
+
 
 # Firestore 클라이언트 생성
 db = firestore.client()
