@@ -3,16 +3,18 @@ import os
 import json
 import datetime
 import firebase_admin
-from firebase_admin import credentials, firestore
+from firebase_admin import firestore
+from firebase_admin import credentials, storage
 
 # Firebase 초기화가 이미 되었는지 확인
 if not firebase_admin._apps:
     cred = credentials.Certificate("C:/gyuminseo/gyuminseo/minseo-dd5fe-firebase-adminsdk-1vays-3faccecc75.json")
-    firebase_admin.initialize_app(cred)
+    firebase_admin.initialize_app(cred, {
+        'storageBucket': 'minseo-dd5fe.appspot.com'  # 실제 Firebase 프로젝트의 Storage 버킷 이름 입력
+    })
 
 # Firestore 클라이언트 생성
 db = firestore.client()
-
 
 
 # 페이지 제목과 설명
@@ -35,8 +37,30 @@ def load_css(file_name):
 # CSS 파일 불러오기
 load_css("C:/gyuminseo/gyuminseo/style.css")
 
-# 위시리스트 저장 파일 경로
-WISHLIST_FILE = "wishlist_items.json"
+# Firebase Storage에서 이미지 URL을 가져오는 함수
+def get_image_url_from_firebase(image_name):
+    client = storage.Client()
+    bucket = client.get_bucket('your-bucket-name')  # Firebase Storage 버킷 이름
+    blob = bucket.blob(f'uploaded_images/{image_name}')
+    
+    # 이미지의 다운로드 URL 생성
+    url = blob.generate_signed_url(expiration=datetime.timedelta(hours=1))  # 1시간 동안 유효한 URL 생성
+    return url
+
+# Firebase Storage에 이미지를 업로드하는 함수 (버킷 이름 명시)
+def upload_image_to_firebase(image):
+    bucket = firebase_admin.storage.bucket('minseo-dd5fe.appspot.com')  # Firebase Storage 버킷 이름 명시
+    blob = bucket.blob(f'uploaded_images/{image.name}')  # 이미지 경로 설정
+    
+    # 이미지를 Firebase Storage에 업로드
+    blob.upload_from_file(image, content_type=image.type)
+    
+    # 업로드한 이미지의 공개 URL 가져오기
+    image_url = blob.generate_signed_url(expiration=datetime.timedelta(hours=1))  # 1시간 동안 유효한 URL 생성
+    return image_url
+
+
+
 # 위시리스트 저장 함수 수정 (Firestore에 저장)
 def save_wishlist_item(item, completed=False):
     wishlist_ref = db.collection("wishlist")
@@ -67,154 +91,137 @@ def delete_wishlist_item(item_name):
             wishlist_ref.document(doc.id).delete()
             break
 
-# 이미지 및 게시물 저장 디렉토리 설정
-POSTS_DIR = "posts"
-os.makedirs(POSTS_DIR, exist_ok=True)
-IMAGE_DIR = "uploaded_images"
-os.makedirs(IMAGE_DIR, exist_ok=True)
-# 게시물 저장 함수에 좋아요 수 추가
+# 게시물 저장 함수 수정 (Firestore에 저장, Firebase Storage에 이미지 저장)
 def save_post(title, date, content, images, likes=0):
-    """게시물을 저장하는 함수"""
+    post_ref = db.collection("posts")
     post_data = {
         "title": title,
         "date": date.isoformat(),
         "content": content,
-        "images": [image.name for image in images],
-        "likes": likes  # 좋아요 수 추가
+        "images": [image.name for image in images],  # 이미지는 Firebase Storage에 저장하고 이름만 저장
+        "likes": likes
     }
+    post_ref.add(post_data)
 
-    post_file = os.path.join(POSTS_DIR, f"{title}.json")
-    with open(post_file, "w", encoding="utf-8") as f:
-        json.dump(post_data, f, ensure_ascii=False, indent=4)
-
-    # 이미지를 저장
+    # 이미지를 Firebase Storage에 저장
     for image in images:
-        image_path = os.path.join(IMAGE_DIR, image.name)
-        with open(image_path, "wb") as f:
-            f.write(image.getbuffer())
-
-# 좋아요 저장 함수
-def update_likes(post_title, new_likes):
-    post_file = os.path.join(POSTS_DIR, f"{post_title}.json")
-    if os.path.exists(post_file):
-        with open(post_file, "r", encoding="utf-8") as f:
-            post = json.load(f)
-        post['likes'] = new_likes
-        with open(post_file, "w", encoding="utf-8") as f:
-            json.dump(post, f, ensure_ascii=False, indent=4)
-
-
-# 게시물 불러오기 함수 (시간 순으로 정렬)
+        upload_image_to_firebase(image)
+        
+# 게시물 불러오기 함수 수정 (Firestore에서 불러오기)
 def load_posts():
-    """저장된 게시물들을 불러오는 함수 (시간 순으로 정렬)"""
+    post_ref = db.collection("posts")
     posts = []
-    for post_file in os.listdir(POSTS_DIR):
-        if post_file.endswith(".json"):
-            with open(os.path.join(POSTS_DIR, post_file), "r", encoding="utf-8") as f:
-                posts.append(json.load(f))
-    
-    # 날짜를 기준으로 내림차순 정렬 (최신 게시물이 위로 오게)
+    for doc in post_ref.stream():
+        posts.append(doc.to_dict())
     posts.sort(key=lambda post: post['date'], reverse=True)
     return posts
 
-# 게시물 삭제 함수
+# 좋아요 수 업데이트 함수 수정
+def update_likes(post_title, new_likes):
+    post_ref = db.collection("posts")
+    for doc in post_ref.stream():
+        if doc.to_dict()["title"] == post_title:
+            post_ref.document(doc.id).update({"likes": new_likes})
+            break
+from google.cloud import storage
+
+# Firebase Storage에서 이미지를 삭제하는 함수
+def delete_image_from_firebase(image_name):
+    client = storage.Client()
+    bucket = client.get_bucket('your-bucket-name')  # Firebase Storage 버킷 이름
+    blob = bucket.blob(f'uploaded_images/{image_name}')
+    blob.delete()
+
+# 게시물 삭제 함수 (Firestore와 Firebase Storage)
 def delete_post(title):
-    """게시물을 삭제하는 함수"""
-    post_file = os.path.join(POSTS_DIR, f"{title}.json")
-    if os.path.exists(post_file):
-        os.remove(post_file)
-    
-    # 게시물과 관련된 이미지도 삭제
-    post_images = load_post_images(title)
-    for image in post_images:
-        image_path = os.path.join(IMAGE_DIR, image)
-        if os.path.exists(image_path):
-            os.remove(image_path)
+    """게시물을 Firestore와 Firebase Storage에서 삭제하는 함수"""
+    # Firestore에서 게시물 찾기
+    posts_ref = db.collection("posts")
+    post_docs = posts_ref.where("title", "==", title).stream()
 
-# 게시물에 포함된 이미지 불러오기 함수
-def load_post_images(title):
-    post_file = os.path.join(POSTS_DIR, f"{title}.json")
-    if os.path.exists(post_file):
-        with open(post_file, "r", encoding="utf-8") as f:
-            post = json.load(f)
-        return post.get("images", [])
-    return []
+    # 해당 게시물을 삭제
+    for doc in post_docs:
+        post_data = doc.to_dict()
+        # Firestore에서 문서 삭제
+        doc.reference.delete()
 
-# 댓글 저장 파일 경로 설정
-COMMENTS_DIR = "comments"
-os.makedirs(COMMENTS_DIR, exist_ok=True)
+        # 게시물에 포함된 이미지 삭제
+        post_images = post_data.get("images", [])
+        for image_name in post_images:
+            delete_image_from_firebase(image_name)
 
-# 댓글 저장 함수
+# 댓글 저장 함수 (Firestore에 저장)
 def save_comment(post_title, comment):
-    comments_file = os.path.join(COMMENTS_DIR, f"{post_title}_comments.json")
-    comments = []
-    if os.path.exists(comments_file):
-        with open(comments_file, "r", encoding="utf-8") as f:
-            comments = json.load(f)
-    comments.append({"comment": comment, "date": datetime.datetime.now().isoformat()})
-    with open(comments_file, "w", encoding="utf-8") as f:
-        json.dump(comments, f, ensure_ascii=False, indent=4)
+    post_ref = db.collection("posts").where("title", "==", post_title).stream()
+    
+    for post in post_ref:
+        comment_data = {
+            "comment": comment,
+            "date": datetime.datetime.now().isoformat()
+        }
+        # Firestore에서 해당 게시물의 서브컬렉션 'comments'에 댓글 저장
+        post.reference.collection("comments").add(comment_data)
 
-# 댓글 불러오기 함수
+# 댓글 불러오기 함수 (Firestore에서 불러오기)
 def load_comments(post_title):
-    comments_file = os.path.join(COMMENTS_DIR, f"{post_title}_comments.json")
-    if os.path.exists(comments_file):
-        with open(comments_file, "r", encoding="utf-8") as f:
-            return json.load(f)
-    return []
+    post_ref = db.collection("posts").where("title", "==", post_title).stream()
+    
+    comments = []
+    for post in post_ref:
+        comments_ref = post.reference.collection("comments").stream()
+        for comment in comments_ref:
+            comments.append(comment.to_dict())
+    return comments
 
-
-TIMELINE_FILE = "timeline_events.json"
-
-# 타임라인 이벤트 저장 함수
+# 타임라인 이벤트 저장 함수 (Firestore에 저장)
 def save_timeline(events):
-    with open(TIMELINE_FILE, "w", encoding="utf-8") as f:
-        json.dump(events, f, ensure_ascii=False, indent=4)
+    timeline_ref = db.collection("timeline")
+    
+    # 모든 이벤트를 Firestore에 저장 (덮어쓰기를 방지하려면 고유한 ID를 사용해야 함)
+    for event in events:
+        timeline_ref.add(event)
 
-# 타임라인 이벤트 불러오기 함수
+# 타임라인 이벤트 불러오기 함수 (Firestore에서 불러오기)
 def load_timeline():
-    if os.path.exists(TIMELINE_FILE):
-        with open(TIMELINE_FILE, "r", encoding="utf-8") as f:
-            return json.load(f)
-    return []  # 파일이 없을 경우 빈 리스트 반환
+    timeline_ref = db.collection("timeline")
+    events = []
+    for doc in timeline_ref.stream():
+        events.append(doc.to_dict())
+    
+    return events
 
-
-
-# 다이어리 저장 파일 경로 설정
-DIARY_DIR = "diaries"
-os.makedirs(DIARY_DIR, exist_ok=True)
-
-# 다이어리 저장 함수
+# 다이어리 저장 함수 (Firestore에 저장)
 def save_diary(title, date, content):
-    """다이어리를 저장하는 함수"""
+    """다이어리를 Firestore에 저장하는 함수"""
+    diary_ref = db.collection("diaries")
     diary_data = {
         "title": title,
         "date": date.isoformat(),
         "content": content
     }
-    diary_file = os.path.join(DIARY_DIR, f"{date.isoformat()}_{title}.json")
-    with open(diary_file, "w", encoding="utf-8") as f:
-        json.dump(diary_data, f, ensure_ascii=False, indent=4)
+    diary_ref.add(diary_data)
 
-# 다이어리 불러오기 함수
+# 다이어리 불러오기 함수 (Firestore에서 불러오기)
 def load_diaries():
-    """저장된 다이어리들을 불러오는 함수 (시간 순으로 정렬)"""
+    """저장된 다이어리들을 Firestore에서 불러오는 함수 (시간 순으로 정렬)"""
+    diary_ref = db.collection("diaries")
     diaries = []
-    for diary_file in os.listdir(DIARY_DIR):
-        if diary_file.endswith(".json"):
-            with open(os.path.join(DIARY_DIR, diary_file), "r", encoding="utf-8") as f:
-                diaries.append(json.load(f))
+    for doc in diary_ref.stream():
+        diaries.append(doc.to_dict())
     
     # 날짜를 기준으로 내림차순 정렬 (최신 다이어리가 위로 오게)
     diaries.sort(key=lambda diary: diary['date'], reverse=True)
     return diaries
 
-# 다이어리 삭제 함수
+# 다이어리 삭제 함수 (Firestore에서 삭제)
 def delete_diary(title, date):
-    """다이어리를 삭제하는 함수"""
-    diary_file = os.path.join(DIARY_DIR, f"{date}_{title}.json")
-    if os.path.exists(diary_file):
-        os.remove(diary_file)
+    """다이어리를 Firestore에서 삭제하는 함수"""
+    diary_ref = db.collection("diaries")
+    
+    # Firestore에서 해당 다이어리 문서를 찾아 삭제 (date는 이미 문자열로 저장된 상태로 가정)
+    diary_docs = diary_ref.where("title", "==", title).where("date", "==", date).stream()
+    for doc in diary_docs:
+        doc.reference.delete()
 
 
 
@@ -347,21 +354,24 @@ elif st.session_state.page == 'anniversary':
     days_until_gyumin_birthday = days_until_birthday(gyumin_birthday)
     st.write(f"규민의 생일까지 {days_until_gyumin_birthday}일 남았습니다.")
 
-# 사진첩 페이지
+# 사진첩 페이지 (Firebase Storage에 이미지를 업로드하고 표시)
 elif st.session_state.page == 'photo':
     st.header("Upload a Photo")
     uploaded_file = st.file_uploader("Choose an image", type=["jpg", "jpeg", "png"])
 
     if uploaded_file is not None:
-        file_path = os.path.join(IMAGE_DIR, uploaded_file.name)
-        with open(file_path, "wb") as f:
-            f.write(uploaded_file.getbuffer())
-        st.image(file_path, use_column_width=True)
-        st.success(f"Image saved to {file_path}")
+        # Firebase Storage에 이미지를 업로드하고 URL을 가져옴
+        image_url = upload_image_to_firebase(uploaded_file)
+        
+        # 이미지를 화면에 표시
+        st.image(image_url, use_column_width=True)
+        st.success(f"Image successfully uploaded!")
+
 
 # 게시물 페이지
 elif st.session_state.page == '게시물':
     
+    # 게시물 목록에서 버튼에 고유한 키를 부여하여 중복 오류 해결
     if st.session_state.post_page == 'main':
         st.header("게시물 목록")
         st.write("저장된 게시물들을 확인할 수 있습니다.")
@@ -369,16 +379,18 @@ elif st.session_state.page == '게시물':
         # 저장된 게시물 목록 표시
         posts = load_posts()
         for i, post in enumerate(posts):
-            if st.button(post["title"]):  # 버튼을 클릭하면 해당 게시물로 이동
+            # 각 버튼에 고유한 키를 부여 (제목과 인덱스를 결합)
+            if st.button(post["title"], key=f"post_button_{i}"):  # 버튼을 클릭하면 해당 게시물로 이동
                 # 선택된 게시물 정보를 세션에 저장
                 st.session_state.selected_post = post  
                 st.session_state.post_page = 'detail'  # 세부 페이지로 이동
                 st.rerun()  # 즉시 페이지 갱신
 
-        # 게시물 업로드 버튼
-        if st.button("게시물 업로드"):
+        # 게시물 목록 아래에 게시물 업로드 버튼 추가
+        if st.button("게시물 업로드", key="upload_post_button"):
             st.session_state.post_page = 'upload'
             st.rerun()  # 즉시 페이지 갱신
+
 
     # 게시물 작성 페이지
     elif st.session_state.post_page == 'upload':
@@ -404,20 +416,22 @@ elif st.session_state.page == '게시물':
             st.session_state.post_page = 'main'
             st.rerun()  # 즉시 페이지 갱신
 
-    # 게시물 세부 페이지 수정
+    # 게시물 세부 페이지 (수정된 코드)
     elif st.session_state.post_page == 'detail':
         st.header("게시물 상세 보기")
 
-        # 선택된 게시물 로드
+        #  선택된 게시물 로드
         selected_post = st.session_state.selected_post  # 세션에서 선택된 게시물 가져오기
 
-        # 게시물 세부 정보 표시
+        # 게시물 세부 정보 표시 (Firebase Storage에서 이미지 URL을 불러옴)
         st.subheader(selected_post["title"])
         st.write(f"날짜: {selected_post['date']}")
         st.write(selected_post["content"])
+    
+        # Firebase Storage에서 이미지를 가져와 표시
         for image in selected_post["images"]:
-            image_path = os.path.join(IMAGE_DIR, image)
-            st.image(image_path, use_column_width=True)
+            image_url = get_image_url_from_firebase(image)  # 이미지 URL 가져오기
+            st.image(image_url, use_column_width=True)  # Streamlit에서 이미지 표시
 
         # 좋아요 버튼 및 좋아요 수 표시
         st.write(f"좋아요: {selected_post.get('likes', 0)}")
