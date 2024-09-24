@@ -91,11 +91,12 @@ def load_images_from_firestore():
         images.append(doc.to_dict())
     return images
 
-# Firebase Storage에서 이미지를 삭제하는 함수
+# Firebase Storage에서 이미지를 삭제하는 함수 수정
 def delete_image_from_firebase(image_name):
-    bucket = firebase_admin.storage.bucket('minseo-dd5fe.appspot.com')  # Firebase Storage 버킷 이름 명시
+    bucket = firebase_admin.storage.bucket('minseo-dd5fe.appspot.com')  # 이미 초기화된 버킷 사용
     blob = bucket.blob(f'uploaded_images/{image_name}')
-    blob.delete()
+    blob.delete()  # 이미지 삭제
+
 
 # Firestore에서 이미지 정보 삭제하는 함수
 def delete_image_info_from_firestore(image_name):
