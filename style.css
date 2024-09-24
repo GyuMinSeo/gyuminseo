@@ -1,151 +1,182 @@
-/* 기존 스타일 유지, 그러나 사랑스러운 테마로 수정 */
-
-/* 배경을 밝고 따뜻한 색상으로 변경 */
+/* Global Style */
 body {
-    background: linear-gradient(135deg, #ff9ff3, #feca57);
-    font-family: 'Arial', sans-serif;
-    color: #2d3436;
+    font-family: 'Noto Sans KR', sans-serif;
+    background-color: #fdf0f7;  /* 밝고 따뜻한 배경색 */
+    color: #333;  /* 텍스트 색상 */
+    margin: 0;
+    padding: 0;
 }
 
-/* 메인 타이틀을 따뜻한 핑크 색상으로 */
 .main-title {
     text-align: center;
-    font-size: 3em;
-    color: #ff6b81;
-    margin-bottom: 0.5em;
-    text-shadow: 2px 2px 4px rgba(255, 182, 193, 0.5);
-}
-
-/* 부제목도 밝은 연보라 색상으로 */
-.subtitle {
-    text-align: center;
-    font-size: 1.2em;
-    color: #c56cf0;
-    margin-bottom: 2em;
-}
-
-/* 업로드 섹션: 부드러운 테두리와 그림자 */
-.upload-section {
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 20px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    margin-bottom: 2em;
-}
-
-/* 업로드된 이미지 스타일 유지 */
-.uploaded-image {
+    font-size: 3rem;
+    color: #6c5ce7;  /* 따뜻한 보라색 톤 */
+    margin-top: 20px;
     margin-bottom: 20px;
 }
 
-/* 버튼 색상을 사랑스러운 핑크 톤으로 변경 */
-.btn-primary {
-    background-color: #ff6b81;
-    color: white;
-    padding: 10px 20px;
-    border-radius: 25px;
+h1, h2, h3, h4, h5, h6 {
+    color: #6c5ce7;
+}
+
+footer {
     text-align: center;
+    font-size: 0.9rem;
+    color: #999;
+    padding: 20px;
+    background-color: #f7d6e0;
+}
+
+button {
+    background-color: #ff6b81;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 1rem;
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
 
-.btn-primary:hover {
-    background-color: #ff9ff3;
+button:hover {
+    background-color: #ff4757;
 }
 
-/* 푸터는 따뜻한 회색으로 */
-.footer {
-    text-align: center;
-    color: #b2bec3;
-    margin-top: 3em;
+input, textarea {
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    padding: 10px;
+    width: 100%;
+    margin-bottom: 10px;
+    font-size: 1rem;
 }
 
-/* 게시물 카드 스타일: 따뜻한 배경과 부드러운 테두리 */
-.post-card {
-    background-color: #ffffff;
-    padding: 20px;
-    margin-bottom: 20px;
-    border-radius: 15px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-.post-title {
-    font-size: 1.5em;
-    font-weight: bold;
-    color: #2c3e50;
+.expander {
+    background-color: #f7d6e0;
+    border: 1px solid #f7d6e0;
+    border-radius: 10px;
+    padding: 15px;
     margin-bottom: 10px;
 }
 
-.post-date {
-    color: #95a5a6;
-    font-size: 0.9em;
-    margin-bottom: 15px;
+.expander-title {
+    font-size: 1.5rem;
+    color: #4a69bd;
 }
 
-.post-content {
-    font-size: 1em;
-    line-height: 1.6em;
-    color: #2d3436;
-    margin-bottom: 15px;
+.expander-content {
+    margin-top: 10px;
+    font-size: 1.2rem;
+    color: #333;
 }
 
-.post-image {
-    border-radius: 5px;
-    margin-bottom: 15px;
-}
-
-/* 댓글 섹션은 밝고 따뜻하게 */
-.comment-section {
-    background-color: #fff0f6;
-    padding: 10px;
-    border-radius: 10px;
-    margin-top: 15px;
-}
-
-.comment {
-    font-size: 0.9em;
-    color: #34495e;
-    margin-bottom: 5px;
-}
-
-/* 타임라인 스타일: 부드러운 색감 추가 */
+/* Timeline Style */
 .timeline-container {
-    position: relative;
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #f9f9f9;
-    border-radius: 10px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 30px auto;
 }
 
 .timeline-item {
-    margin: 20px 0;
+    width: 100%;
+    max-width: 600px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
     padding: 20px;
-    border-left: 2px solid #feca57;
-    position: relative;
-    background-color: #fff0f6;
+    text-align: center;
+    border-left: 4px solid #6c5ce7;
 }
 
 .timeline-item .date {
-    font-size: 18px;
-    color: #ff6b81;
+    font-size: 1.2rem;
+    color: #a29bfe;
+    font-weight: bold;
     margin-bottom: 10px;
 }
 
 .timeline-item .event {
-    font-size: 22px;
-    color: #c56cf0;
+    font-size: 1.5rem;
+    color: #6c5ce7;
+}
+
+/* Photo Album Style */
+.st-image {
+    max-width: 100%;
+    border-radius: 10px;
+    margin: 10px 0;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Post Page Style */
+.post-title {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #6c5ce7;
+}
+
+.post-content {
+    font-size: 1.2rem;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.post-date {
+    font-size: 1rem;
+    color: #a29bfe;
+    margin-bottom: 10px;
+}
+
+.comment-section {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #f7d6e0;
+    border-radius: 10px;
+}
+
+.comment {
+    font-size: 1rem;
+    color: #333;
+    background-color: #fff;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Wishlist Style */
+.wishlist-item {
+    font-size: 1.2rem;
+    color: #4a69bd;
+}
+
+.wishlist-completed {
+    text-decoration: line-through;
+    color: #a29bfe;
+}
+
+/* Diary Style */
+.diary-title {
+    font-size: 2rem;
+    color: #6c5ce7;
+}
+
+.diary-content {
+    font-size: 1.2rem;
+    line-height: 1.6;
+    color: #333;
+}
+
+/* Anniversary Page */
+.anniversary-counter {
+    font-size: 2.5rem;
+    color: #ff6b81;
     font-weight: bold;
 }
 
-.timeline-item::before {
-    content: "";
-    position: absolute;
-    left: -10px;
-    top: 20px;
-    width: 20px;
-    height: 20px;
-    background-color: #ff9ff3;
-    border-radius: 50%;
+.anniversary-description {
+    font-size: 1.2rem;
+    color: #333;
 }

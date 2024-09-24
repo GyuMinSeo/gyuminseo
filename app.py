@@ -49,7 +49,6 @@ def load_css(file_name):
     with open(file_name, "r", encoding="utf-8") as f:
         st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
-
 # CSS 파일 불러오기
 load_css("style.css")
 
@@ -238,9 +237,6 @@ def delete_diary(title, date):
     for doc in diary_docs:
         doc.reference.delete()
 
-
-
-
 # 사이드바 메뉴 생성
 st.sidebar.title("우리의 발자취")
 menu = st.sidebar.radio("Go to", ["Home", "타임라인", "기념일", "사진첩", "스토리", "다이어리", "위시리스트"])
@@ -356,7 +352,7 @@ elif st.session_state.page == 'anniversary':
 
     days_difference = (today - starting_date).days
     days_difference2 = days_difference + 1
-    st.write(f"{starting_date}로부터 {days_difference2}일이 지났습니다 (D+{days_difference2}).")
+    st.markdown(f'<p class="anniversary-counter">{starting_date}로부터 {days_difference2}일이 지났습니다 (D+{days_difference2}).</p>', unsafe_allow_html=True)
 
     def days_until_birthday(birthday):
         next_birthday = birthday.replace(year=today.year)
@@ -365,9 +361,9 @@ elif st.session_state.page == 'anniversary':
         return (next_birthday - today).days
 
     days_until_minseo_birthday = days_until_birthday(minseo_birthday)
-    st.write(f"민서의 생일까지 {days_until_minseo_birthday}일 남았습니다.")
+    st.markdown(f'<p class="anniversary-description">민서의 생일까지 {days_until_minseo_birthday}일 남았습니다.</p>', unsafe_allow_html=True)
     days_until_gyumin_birthday = days_until_birthday(gyumin_birthday)
-    st.write(f"규민의 생일까지 {days_until_gyumin_birthday}일 남았습니다.")
+    st.markdown(f'<p class="anniversary-description">규민의 생일까지 {days_until_gyumin_birthday}일 남았습니다.</p>', unsafe_allow_html=True)
 
 # 사진첩 페이지 (Firebase Storage에 이미지를 업로드하고 표시)
 elif st.session_state.page == 'photo':
@@ -379,9 +375,8 @@ elif st.session_state.page == 'photo':
         image_url = upload_image_to_firebase(uploaded_file)
         
         # 이미지를 화면에 표시
-        st.image(image_url, use_column_width=True)
+        st.image(image_url, use_column_width=True, caption="Uploaded Image")
         st.success(f"Image successfully uploaded!")
-
 
 # 게시물 페이지
 elif st.session_state.page == '게시물':
@@ -439,17 +434,17 @@ elif st.session_state.page == '게시물':
         selected_post = st.session_state.selected_post  # 세션에서 선택된 게시물 가져오기
 
         # 게시물 세부 정보 표시 (Firebase Storage에서 이미지 URL을 불러옴)
-        st.subheader(selected_post["title"])
-        st.write(f"날짜: {selected_post['date']}")
-        st.write(selected_post["content"])
+        st.markdown(f'<h2 class="post-title">{selected_post["title"]}</h2>', unsafe_allow_html=True)
+        st.markdown(f'<p class="post-date">날짜: {selected_post["date"]}</p>', unsafe_allow_html=True)
+        st.markdown(f'<div class="post-content">{selected_post["content"]}</div>', unsafe_allow_html=True)
     
         # Firebase Storage에서 이미지를 가져와 표시
         for image in selected_post["images"]:
             image_url = get_image_url_from_firebase(image)  # 이미지 URL 가져오기
-            st.image(image_url, use_column_width=True)  # Streamlit에서 이미지 표시
+            st.image(image_url, use_column_width=True, caption=image)  # Streamlit에서 이미지 표시
 
         # 좋아요 버튼 및 좋아요 수 표시
-        st.write(f"좋아요: {selected_post.get('likes', 0)}")
+        st.markdown(f"<p>좋아요: {selected_post.get('likes', 0)}</p>", unsafe_allow_html=True)
         if st.button("좋아요"):
             new_likes = selected_post.get('likes', 0) + 1
             update_likes(selected_post["title"], new_likes)
@@ -469,7 +464,7 @@ elif st.session_state.page == '게시물':
         # 저장된 댓글 불러오기
         comments = load_comments(selected_post["title"])
         for comment_data in comments:
-            st.write(f"{comment_data['date']}: {comment_data['comment']}")
+            st.markdown(f'<div class="comment">{comment_data["date"]}: {comment_data["comment"]}</div>', unsafe_allow_html=True)
 
         # 돌아가기 버튼
         if st.button("돌아가기"):
@@ -544,7 +539,7 @@ elif st.session_state.page == 'wishlist':
         # 취소 버튼
         if st.button("취소"):
             st.session_state.wishlist_page = 'main'
-            st.rerun()  # 즉시 페이지 갱신
+            st.rerun()
 
 
 
