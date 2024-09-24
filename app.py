@@ -91,11 +91,12 @@ def load_images_from_firestore():
         images.append(doc.to_dict())
     return images
 
-# Firebase Storage에서 이미지를 삭제하는 함수 수정
+# Firebase Storage에서 이미지를 삭제하는 함수 수정 (storage.Client() 호출 제거)
 def delete_image_from_firebase(image_name):
-    bucket = firebase_admin.storage.bucket('minseo-dd5fe.appspot.com')  # 이미 초기화된 버킷 사용
+    bucket = firebase_admin.storage.bucket('minseo-dd5fe.appspot.com')  # 이미 초기화된 Firebase Admin SDK의 버킷 사용
     blob = bucket.blob(f'uploaded_images/{image_name}')
-    blob.delete()  # 이미지 삭제
+    blob.delete()  # Firebase Storage에서 이미지 삭제
+
 
 
 # Firestore에서 이미지 정보 삭제하는 함수
@@ -425,7 +426,7 @@ elif st.session_state.page == 'photo':
     # Firestore에서 저장된 이미지들을 불러와 표시 및 삭제 기능 추가
     st.header("Uploaded Photos")
     saved_images = load_images_from_firestore()
-    
+
     if saved_images:
         for img in saved_images:
             col1, col2 = st.columns([8, 2])
@@ -439,6 +440,7 @@ elif st.session_state.page == 'photo':
                     st.rerun()  # 페이지를 다시 로드하여 업데이트
     else:
         st.write("아직 업로드된 사진이 없습니다.")
+
 
 
 # 게시물 페이지
