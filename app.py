@@ -257,7 +257,7 @@ elif menu == "다이어리":
 elif menu == "위시리스트":
     st.session_state.page = 'wishlist'
 
-# 하트 애니메이션을 위한 HTML
+# HTML로 하트 애니메이션을 추가
 st.markdown('''
 <div class="hearts-container">
     <div class="heart"></div>
@@ -266,6 +266,7 @@ st.markdown('''
     <div class="heart"></div>
     <div class="heart"></div>
 </div>
+<div class="stars"></div>  <!-- 별 배경 추가 -->
 ''', unsafe_allow_html=True)
 
 # 홈 페이지
