@@ -62,7 +62,7 @@ def get_image_url_from_firebase(image_name):
     url = blob.generate_signed_url(expiration=datetime.timedelta(hours=1))  # 1시간 동안 유효한 URL 생성
     return url
 
-# Firebase Storage에 이미지를 업로드하는 함수 (버킷 이름 명시)
+# Firebase Storage에 이미지를 업로드하고 이미지 URL 반환
 def upload_image_to_firebase(image):
     bucket = firebase_admin.storage.bucket('minseo-dd5fe.appspot.com')  # Firebase Storage 버킷 이름 명시
     blob = bucket.blob(f'uploaded_images/{image.name}')  # 이미지 경로 설정
@@ -72,7 +72,24 @@ def upload_image_to_firebase(image):
     
     # 업로드한 이미지의 공개 URL 가져오기
     image_url = blob.generate_signed_url(expiration=datetime.timedelta(hours=1))  # 1시간 동안 유효한 URL 생성
-    return image_url
+    return image.name, image_url
+
+# Firestore에 이미지 정보 저장 (영구 보관)
+def save_image_info_to_firestore(image_name, image_url):
+    image_ref = db.collection("photos")
+    image_data = {
+        "image_name": image_name,
+        "image_url": image_url
+    }
+    image_ref.add(image_data)
+
+# Firestore에서 저장된 이미지 정보를 불러오는 함수
+def load_images_from_firestore():
+    images_ref = db.collection("photos")
+    images = []
+    for doc in images_ref.stream():
+        images.append(doc.to_dict())
+    return images
 
 
 
@@ -375,18 +392,32 @@ elif st.session_state.page == 'anniversary':
     days_until_gyumin_birthday = days_until_birthday(gyumin_birthday)
     st.markdown(f'<p class="anniversary-description">규민의 생일까지 {days_until_gyumin_birthday}일 남았습니다.</p>', unsafe_allow_html=True)
 
-# 사진첩 페이지 (Firebase Storage에 이미지를 업로드하고 표시)
+# 사진첩 페이지 (Firebase Storage에 이미지를 업로드하고 Firestore에 저장한 후, 영구적으로 표시)
 elif st.session_state.page == 'photo':
     st.header("Upload a Photo")
     uploaded_file = st.file_uploader("Choose an image", type=["jpg", "jpeg", "png"])
 
     if uploaded_file is not None:
         # Firebase Storage에 이미지를 업로드하고 URL을 가져옴
-        image_url = upload_image_to_firebase(uploaded_file)
+        image_name, image_url = upload_image_to_firebase(uploaded_file)
+        
+        # Firestore에 이미지 정보 저장
+        save_image_info_to_firestore(image_name, image_url)
         
         # 이미지를 화면에 표시
         st.image(image_url, use_column_width=True, caption="Uploaded Image")
-        st.success(f"Image successfully uploaded!")
+        st.success("Image successfully uploaded!")
+
+    # Firestore에서 저장된 이미지들을 불러와 표시
+    st.header("Uploaded Photos")
+    saved_images = load_images_from_firestore()
+    
+    if saved_images:
+        for img in saved_images:
+            st.image(img['image_url'], use_column_width=True, caption=img['image_name'])
+    else:
+        st.write("No photos uploaded yet.")
+
 
 # 게시물 페이지
 elif st.session_state.page == '게시물':
