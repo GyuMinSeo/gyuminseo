@@ -1,4 +1,48 @@
 
+/* 전체 페이지에 적용할 배경 스타일 */
+body {
+    background: linear-gradient(to bottom, #0d1b2a, #1b263b, #415a77); /* 상단에서 하단으로 그라데이션 적용 */
+    color: #ffffff; /* 글자색을 흰색으로 설정 */
+    font-family: 'Arial', sans-serif;
+    background-image: url('https://your-background-image-url.com'); /* 여기에 실제 배경 이미지 URL을 입력하세요 */
+    background-size: cover; /* 배경 이미지를 화면에 맞추기 */
+    background-position: center; /* 배경 이미지의 위치를 가운데로 설정 */
+    background-repeat: no-repeat; /* 배경 이미지 반복을 하지 않음 */
+}
+
+/* 별이 반짝이는 애니메이션 */
+@keyframes twinkle {
+    0% { opacity: 0.2; } /* 초기 상태 */
+    50% { opacity: 1; }  /* 중간에 최대 밝기 */
+    100% { opacity: 0.2; } /* 다시 흐려짐 */
+}
+
+.stars {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    overflow: hidden;
+}
+
+.star {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: #ffffff;
+    border-radius: 50%;
+    animation: twinkle 2s infinite ease-in-out;
+}
+
+.star:nth-child(2n) {
+    animation-duration: 3s;
+}
+
+.star:nth-child(3n) {
+    animation-duration: 4s;
+}
+
+
 /* 하트 애니메이션 */
 @keyframes float {
     0% {
