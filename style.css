@@ -28,7 +28,7 @@ body {
     position: absolute;
     width: 2px;
     height: 2px;
-    background: white;
+    background: rgb(186, 243, 44);
     border-radius: 50%;
     animation: twinkling 1.5s infinite ease-in-out;
 }
