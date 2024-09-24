@@ -21,7 +21,7 @@ firebase_creds = {
 }
 
 
-# Firebase 초기화가 이미 되었는지 확인d
+# Firebase 초기화가 이미 되었는지 확인
 if not firebase_admin._apps:
     cred = credentials.Certificate(firebase_creds)
     firebase_admin.initialize_app(cred, {
@@ -139,7 +139,6 @@ def update_likes(post_title, new_likes):
         if doc.to_dict()["title"] == post_title:
             post_ref.document(doc.id).update({"likes": new_likes})
             break
-from google.cloud import storage
 
 # Firebase Storage에서 이미지를 삭제하는 함수
 def delete_image_from_firebase(image_name):
@@ -546,11 +545,6 @@ elif st.session_state.page == 'wishlist':
         if st.button("취소"):
             st.session_state.wishlist_page = 'main'
             st.rerun()  # 즉시 페이지 갱신
-
-
-
-
-
 
 
 
