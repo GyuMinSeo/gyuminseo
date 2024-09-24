@@ -1,3 +1,53 @@
+/* 바디 배경 - 밤하늘 */
+body {
+    background-color: #000033;  /* 어두운 파란색 밤하늘 배경 */
+    overflow: hidden;
+    color: white;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+/* 별 깜박이는 애니메이션 */
+@keyframes twinkling {
+    0% { opacity: 0.3; }
+    50% { opacity: 1; }
+    100% { opacity: 0.3; }
+}
+
+/* 별들 */
+.stars {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    z-index: -1; /* 컨텐츠 뒤에 배경으로 설정 */
+}
+
+.star {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: white;
+    border-radius: 50%;
+    animation: twinkling 1.5s infinite ease-in-out;
+}
+
+/* 랜덤한 위치에 별들을 배치하는 코드 */
+@keyframes moveStars {
+    from { transform: translateY(0); }
+    to { transform: translateY(-100%); }
+}
+
+.moving-stars {
+    animation: moveStars 50s linear infinite;
+}
+
+.star:nth-child(odd) {
+    animation-delay: -1s;
+}
+
+
 /* 하트 애니메이션 */
 @keyframes float {
     0% {
