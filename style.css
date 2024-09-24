@@ -16,6 +16,8 @@ body {
     color: #6c5ce7;
     margin-top: 20px;
     margin-bottom: 20px;
+    z-index: 1; /* 타이틀이 하트 위에 렌더링되도록 설정 */
+    position: relative;
 }
 
 /* 움직이는 하트 */
@@ -41,7 +43,7 @@ body {
     margin-left: -10px;
     transform: rotate(-45deg);
     animation: floatHeart 5s infinite;
-    z-index: 0;
+    z-index: -1; /* 하트는 배경에서만 동작하도록 z-index를 낮게 설정 */
 }
 
 .heart::before,
@@ -82,8 +84,8 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    pointer-events: none; /* 클릭 무시 */
-    z-index: -1;
+    pointer-events: none; /* 클릭 방지 */
+    z-index: -1; /* 하트는 배경에만 존재 */
 }
 
 .heart-wrapper .heart {
@@ -125,6 +127,7 @@ body {
     position: relative;
     z-index: 1;
 }
+
 
 h1, h2, h3, h4, h5, h6 {
     color: #6c5ce7;
