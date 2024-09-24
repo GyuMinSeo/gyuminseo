@@ -8,6 +8,11 @@
     }
 }
 
+body {
+    background-color: #001d3d;  /* 어두운 밤하늘 색상 */
+    overflow: hidden;
+    position: relative;
+}
 
 /* 별이 움직이는 애니메이션 */
 .stars {
@@ -17,8 +22,8 @@
     width: 200%;
     height: 200%;
     background: transparent;
-    background-image: radial-gradient(rgb(31, 141, 79), transparent);
-    z-index: -2;  /* 하트 아래에 표시되도록 설정 */
+    background-image: radial-gradient(rgb(185, 221, 9), transparent);
+    z-index: 10000;  /* 최상단에 표시되도록 설정 */
     animation: starMove 100s linear infinite;
     opacity: 0.8;
 }
