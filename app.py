@@ -6,9 +6,24 @@ import firebase_admin
 from firebase_admin import firestore
 from firebase_admin import credentials, storage
 
+# Streamlit secrets에서 Firebase 설정 정보를 가져옵니다.
+firebase_creds = {
+    "type": st.secrets["firebase"]["type"],
+    "project_id": st.secrets["firebase"]["project_id"],
+    "private_key_id": st.secrets["firebase"]["private_key_id"],
+    "private_key": st.secrets["firebase"]["private_key"].replace("\\n", "\n"),
+    "client_email": st.secrets["firebase"]["client_email"],
+    "client_id": st.secrets["firebase"]["client_id"],
+    "auth_uri": st.secrets["firebase"]["auth_uri"],
+    "token_uri": st.secrets["firebase"]["token_uri"],
+    "auth_provider_x509_cert_url": st.secrets["firebase"]["auth_provider_x509_cert_url"],
+    "client_x509_cert_url": st.secrets["firebase"]["client_x509_cert_url"]
+}
+
+
 # Firebase 초기화가 이미 되었는지 확인d
 if not firebase_admin._apps:
-    cred = credentials.Certificate("C:/gyuminseo/gyuminseo/minseo-dd5fe-firebase-adminsdk-1vays-3faccecc75.json")
+    cred = credentials.Certificate(firebase_creds)
     firebase_admin.initialize_app(cred, {
         'storageBucket': 'minseo-dd5fe.appspot.com'  # 실제 Firebase 프로젝트의 Storage 버킷 이름 입력
     })
