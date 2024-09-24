@@ -51,7 +51,7 @@ def load_css(file_name):
 
 
 # CSS 파일 불러오기
-load_css("C:/gyuminseo/gyuminseo/style.css")
+load_css("style.css")
 
 # Firebase Storage에서 이미지 URL을 가져오는 함수
 def get_image_url_from_firebase(image_name):
